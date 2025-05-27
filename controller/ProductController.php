@@ -72,6 +72,13 @@ switch ($action) {
             echo json_encode($result);
             break;
 
+    //new
+    case 'getLowStockProducts':
+        $threshold = isset($_GET['threshold']) ? intval($_GET['threshold']) : 5;
+        $result = $product->getLowStockProducts($threshold);
+        echo json_encode($result);
+        break;
+
     default:
         header("Location: ../view/InventoryPage.php");
         exit();
