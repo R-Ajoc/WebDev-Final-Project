@@ -1,66 +1,74 @@
 <?php
-class ProductController {
-    private $productModel;
+session_start();
 
-    public function __construct($db) {
-        $this->productModel = new Product($db);
-    }
+require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../model/Product.php';
 
-    // Add a product
-    public function addProduct() {
+$db = new Database();
+$conn = $db->getConnection();
+$product = new Product($conn);
+
+$action = $_GET['action'] ?? '';
+
+switch ($action) {
+    case 'add':
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $name = $_POST['product_name'];
-            $category = $_POST['category'];
-            $price = $_POST['price'];
-            $quantity = $_POST['quantity'];
+            $product_name = trim($_POST['product_name'] ?? '');
+            $category = trim($_POST['category'] ?? '');
+            $price = filter_var($_POST['price'] ?? '', FILTER_VALIDATE_FLOAT);
+            $quantity = filter_var($_POST['quantity'] ?? '', FILTER_VALIDATE_INT);
 
-            $success = $this->productModel->add($name, $category, $price, $quantity);
+            // Validate inputs; redirect back on failure
+            if ($product_name === '' || $category === '' || $price === false || $quantity === false) {
+                $_SESSION['error'] = "Invalid input data. Please try again.";
+                header("Location: ../view/inventorypage.php");
+                exit();
+            }
 
-            echo json_encode(['success' => $success]);
+            $product->add($product_name, $category, $price, $quantity);
+            $_SESSION['success'] = "Product added successfully.";
+            header("Location: ../view/inventorypage.php");
+            exit();
         }
-    }
+        break;
 
-    // Update a product
-    public function updateProduct() {
+    case 'update':
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $id = $_POST['product_id'];
-            $name = $_POST['product_name'];
-            $category = $_POST['category'];
-            $price = $_POST['price'];
-            $quantity = $_POST['quantity'];
+            $id = filter_var($_POST['product_id'] ?? '', FILTER_VALIDATE_INT);
+            $product_name = trim($_POST['product_name'] ?? '');
+            $category = trim($_POST['category'] ?? '');
+            $price = filter_var($_POST['price'] ?? '', FILTER_VALIDATE_FLOAT);
+            $quantity = filter_var($_POST['quantity'] ?? '', FILTER_VALIDATE_INT);
 
-            $success = $this->productModel->update($id, $name, $category, $price, $quantity);
+            if ($id === false || $product_name === '' || $category === '' || $price === false || $quantity === false) {
+                $_SESSION['error'] = "Invalid input data. Please try again.";
+                header("Location: ../view/inventorypage.php");
+                exit();
+            }
 
-            echo json_encode(['success' => $success]);
+            $product->update($id, $product_name, $category, $price, $quantity);
+            $_SESSION['success'] = "Product updated successfully.";
+            header("Location: ../view/inventorypage.php");
+            exit();
         }
-    }
+        break;
 
-    // Delete a product
-    public function deleteProduct() {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $id = $_POST['product_id'];
-            $success = $this->productModel->delete($id);
-            echo json_encode(['success' => $success]);
+    case 'delete':
+        if (isset($_GET['id'])) {
+            $id = filter_var($_GET['id'], FILTER_VALIDATE_INT);
+            if ($id !== false) {
+                $product->delete($id);
+                $_SESSION['success'] = "Product deleted successfully.";
+            } else {
+                $_SESSION['error'] = "Invalid product ID.";
+            }
+            header("Location: ../view/inventorypage.php");
+            exit();
         }
-    }
+        break;
 
-    // Get all products
-    public function getAllProducts() {
-        $products = $this->productModel->getAll();
-        echo json_encode($products);
-    }
-
-    // Get top-selling product
-    public function getTopSellingProduct() {
-        if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['month'])) {
-            $month = $_GET['month']; // format: YYYY-MM
-            $stmt = $this->productModel->conn->prepare("CALL TopSelling(:target_month)");
-            $stmt->bindParam(':target_month', $month);
-            $stmt->execute();
-            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            $stmt->closeCursor();
-            echo json_encode($result);
-        }
-    }
+    default:
+        header("Location: ../view/inventorypage.php");
+        exit();
 }
 ?>
