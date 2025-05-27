@@ -19,12 +19,12 @@
       </a>
       <div class="divider"></div>
 
-      <a href="TransactionPage.php" class="nav-link">
+      <a href="Transactions.php" class="nav-link">
         <img src="../assets/images/transaction.svg" class="icon" alt="Transactions Icon"> Transactions
       </a>
       <div class="divider"></div>
 
-      <a href="SalesReport.php" class="nav-link">
+      <a href="Sales.php" class="nav-link">
         <img src="../assets/images/sales.svg" class="icon" alt="Sales Icon"> Sales
       </a>
       <div class="divider"></div>
