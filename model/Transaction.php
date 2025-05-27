@@ -39,5 +39,15 @@ class Transaction {
     $stmt->closeCursor();
     return $transactions;
     }
+
+    public function getMonthlySales($month, $year) {
+    $stmt = $this->conn->prepare("SELECT SUM(total_amount) AS total_sales FROM transactions WHERE MONTH(transaction_date) = :month AND YEAR(transaction_date) = :year");
+    $stmt->bindParam(':month', $month);
+    $stmt->bindParam(':year', $year);
+    $stmt->execute();
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
 }
 ?>
+
