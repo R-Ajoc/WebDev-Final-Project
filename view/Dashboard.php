@@ -1,99 +1,105 @@
+<?php
+session_start();
+require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../model/Product.php';
+require_once __DIR__ . '/../model/Transaction.php';
+
+
+$database = new Database();
+$conn = $database->getConnection();
+
+if ($conn === null) {
+    die("Database connection is not set.");
+}
+
+$product = new Product($conn);
+$transaction = new Transaction($conn);
+
+// Fetch data
+$totalProducts = $product->getTotalProducts();
+$monthlySales = $transaction->getMonthlySales(date('m'), date('Y'));
+$topSelling = $product->getTopSelling(date('Y-m'));
+?>
+
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>SARISMART MANAGEMENT SYSTEM</title>
-
-	<!--JQUERY UI & JS -->
-	<link rel="stylesheet" href="../assets/jquery/base/jquery-ui.css">
-	<script src="../assets/jquery/jquery.js"></script>
-	<script src="../assets/jquery/jquery-ui.js"></script>
-
-	<!-- Bootstrap 5 -->
-	<link href="../assets/css/bootstrap.min.css" rel="stylesheet">
-	<script src="../assets/js/bootstrap.bundle.min.js"></script>
-
-	<link rel="stylesheet" type="text/css" href="../assets/style.css">
-
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>SARISMART MANAGEMENT SYSTEM</title>
+    <link href="../assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/jQuery/jquery-ui.css">
+    <link href="../assets/DataTables/datatables.min.css" rel="stylesheet">
+    <link href="../assets/inventory.css" rel="stylesheet">
 </head>
-
 <body>
+    <?php include 'sidebar.php'; ?>
 
-	<div class="container-body d-flex">
-		<div class="sideBar">
-			<div class="sideBar-content">
-				<div class="sideBarlogo d-flex">
-					<img src="../assets/images/store.svg">
-					<div class="logoContent disp-5 text-center text-white">
-						<p class="plogo">
-							STORE MANAGEMENT SYSTEM
-						</p>
-					</div>
-				</div>
+    <div class="Inventory">
+        <div class="dashBoard-content py-3">
+            <div class="header-content d-flex justify-content-between align-items-center rounded p-3" style="background-color: transparent;">
+                <h1 class="ms-4 d-flex align-items-center fw-bold" style="color: #004aad; font-size: 2rem; font-weight: 600;">
+                    Dashboard
+                </h1>
+                <h2 id="currentDate" class="me-4 text-secondary fst-italic" style="font-weight: 400; font-size: 1.25rem;"></h2>
+            </div>
+            <hr class="mt-1" style="border-top: 2px solid #004aad;">
+        </div>
 
-				<div class="sideBar-menu">
-					<div class="sideBar-menuContent">
-						<div class="menu-items-top d-block">
-							<a href="Dashboard.php" class="menu-btn btn d-block ms-2"><img src="../assets/images/home.svg" class="menu-logo me-3">Dashboard</a>
-						</div>
-						<div class="menu-items d-block">
-							<a href="InventoryPage.php" class="menu-btn btn d-block ms-2"><img src="../assets/images/inventory.svg" class="menu-logo me-3">Inventory</a>
-						</div>
-						<div class="menu-items d-block">
-							<a href="create.php" class="menu-btn btn d-block ms-2"><img src="../assets/images/transaction.svg" class="menu-logo me-3">Transactions</a>
-						</div>
-						<div class="menu-items d-block">
-							<a href="create.php" class="menu-btn btn d-block ms-2"><img src="../assets/images/sales.svg" class="menu-logo me-3">Sales</a>
-						</div>
-					</div>
-				</div>
-				<div class="sideBar-Exit">
-					<div class="menu-items d-block">
-						<a href="EntryPage.html" class="menu-btn btn d-block ms-2"><img src="../assets/images/logout.svg" class="menu-logo me-3">Logout</a>
-					</div>
-				</div>
-			</div>	
-		</div>
+        <div class="main-content">
 
-		<div class="dashBoard">
-			<div class="container dashBoard-content">
-				<div class="header-content d-flex justify-content-between">
-				  <h1 class="ms-4">Dashboard</h1>
-				  <h2 id="currentDate"></h2>
-				</div>
-				<hr>
-				<div class="stockAlert rounded ms-3 mb-5">
-					<div class="alert p-4 text-white">Welcome</div>
-				</div>
+            <!-- Stock Alert, mostly suwat ra, wala pakoy idea unsaon jud -->
+            <div class="mb-4">
+                <div class="rounded p-4 text-white" style="background-color: #004aad;">
+                    <h4 class="mb-0">Stock Alert: Check low inventory levels regularly!</h4>
+                </div>
+            </div>
 
-				<div class="container">
-					<div class="row g-4">
-						<div class="col rounded p-5 ms-3 dashboard-item numProd text-white text-center">
-								<h1>Total No. of Products</h1>
-						</div>
-						<div class="col rounded p-5 ms-3 dashboard-item saleMonth text-white text-center">
-								<h1>Total Monthly Sales</h1>
-							
-						</div>
-						<div class="col rounded p-5 ms-3 dashboard-item topsellProd text-white text-center">
-								<h1>Top-selling Products</h1>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
+            
+            <div class="row g-4">
+                <!-- Total No. of Products -->
+                <div class="col-md-4 col-sm-12">
+                    <div class="rounded p-4 text-white text-center" style="background-color: #004aad;">
+                        <h5>Total No. of Products</h5>
+                        <h3><?= htmlspecialchars($totalProducts['total'] ?? '0') ?></h3>
+                    </div>
+                </div>
+
+                <!-- Monthly Sales -->
+                <div class="col-md-4 col-sm-12">
+                    <div class="rounded p-4 text-white text-center" style="background-color: #004aad;">
+                        <h5>Total Monthly Sales</h5>
+                        <h3>₱<?= number_format($monthlySales['total_sales'] ?? 0, 2) ?></h3>
+                    </div>
+                </div>
+
+                <!-- Top-selling Product -->
+                <div class="col-md-4 col-sm-12">
+                    <div class="rounded p-4 text-white text-center" style="background-color: #004aad;">
+                        <h5>Top-selling Product</h5>
+                        <h3><?= htmlspecialchars($topSelling[0]['product_name'] ?? 'N/A') ?></h3>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="../assets/jQuery/jquery.js"></script>
+    <script src="../assets/jQuery/jquery-ui.js"></script>
+    <script src="../assets/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/DataTables/datatables.min.js"></script>
+
+    <script>
+        function updateTime() {
+            const now = new Date();
+            const date = now.toLocaleDateString();
+            const time = now.toLocaleTimeString();
+            document.getElementById("currentDate").textContent = `${date} ${time}`;
+        }
+
+        updateTime();
+        setInterval(updateTime, 1000);
+    </script>
 </body>
-
-<script>
-	const currentDate = new Date();
-		const year = currentDate.getFullYear();
-  		const month = String(currentDate.getMonth() + 1).padStart(2, '0'); // Month is 0-indexed
-  		const day = String(currentDate.getDate()).padStart(2, '0');
-  		const formattedDate = `${year}-${month}-${day}`; //YYYY-MM-DD format
-  		document.getElementById("currentDate").textContent = "Date: "+ formattedDate;
-
-</script>
-
 </html>
