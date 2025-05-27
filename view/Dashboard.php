@@ -35,10 +35,10 @@
 				<div class="sideBar-menu">
 					<div class="sideBar-menuContent">
 						<div class="menu-items-top d-block">
-							<a href="Dashboard.html" class="menu-btn btn d-block ms-2"><img src="../assets/images/home.svg" class="menu-logo me-3">Dashboard</a>
+							<a href="Dashboard.php" class="menu-btn btn d-block ms-2"><img src="../assets/images/home.svg" class="menu-logo me-3">Dashboard</a>
 						</div>
 						<div class="menu-items d-block">
-							<a href="InventoryPage.html" class="menu-btn btn d-block ms-2"><img src="../assets/images/inventory.svg" class="menu-logo me-3">Inventory</a>
+							<a href="InventoryPage.php" class="menu-btn btn d-block ms-2"><img src="../assets/images/inventory.svg" class="menu-logo me-3">Inventory</a>
 						</div>
 						<div class="menu-items d-block">
 							<a href="create.php" class="menu-btn btn d-block ms-2"><img src="../assets/images/transaction.svg" class="menu-logo me-3">Transactions</a>
