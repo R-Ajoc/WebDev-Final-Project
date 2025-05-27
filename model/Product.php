@@ -7,23 +7,23 @@ class Product {
     }
 
     // Add a new product
-    public function add($product_name, $category, $price, $quantity_in_stock) {
+    public function add($product_name, $category, $price, $quantity) {
         $stmt = $this->conn->prepare("CALL AddProduct(:p_product_name, :p_category, :p_price, :p_quantity)");
         $stmt->bindParam(':p_product_name', $product_name);
         $stmt->bindParam(':p_category', $category);
         $stmt->bindParam(':p_price', $price);
-        $stmt->bindParam(':p_quantity', $quantity_in_stock);
+        $stmt->bindParam(':p_quantity', $quantity);
         return $stmt->execute();
     }
 
     // Update an existing product
-    public function update($product_id, $product_name, $category, $price, $quantity_in_stock) {
+    public function update($product_id, $product_name, $category, $price, $quantity) {
         $stmt = $this->conn->prepare("CALL UpdateProduct(:p_product_id, :p_product_name, :p_category, :p_price, :p_quantity)");
         $stmt->bindParam(':p_product_id', $product_id);
         $stmt->bindParam(':p_product_name', $product_name);
         $stmt->bindParam(':p_category', $category);
         $stmt->bindParam(':p_price', $price);
-        $stmt->bindParam(':p_quantity', $quantity_in_stock);
+        $stmt->bindParam(':p_quantity', $quantity);
         return $stmt->execute();
     }
 
