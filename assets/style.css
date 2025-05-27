@@ -290,12 +290,37 @@ td{
 }
 
 .reportFirst{
-  border: 2px solid white;
+  border: 5px solid white;
+  border-radius: 20px;
   height: 400px;
 }
 
 .reportSecond{
-  border: 2px solid white;
+  width: auto;
   height: 400px;
 }
 
+.reportFirst h3, h4{
+  padding-top: 50px;
+  font-size: 50px;
+}
+
+.reportSecond .topsellProd, .numTract{
+  border-radius: 20px;
+  border: 5px solid white;
+  width: 300px;
+  height: 190px;
+}
+
+.topsellProd{
+  margin-top: 10px;
+}
+
+.ntHeader, .tspHeader{
+  padding-top: 35px;
+  font-size: 30px;
+}
+
+.reportNT, .reportTSP{
+  font-size: 25px;
+}
