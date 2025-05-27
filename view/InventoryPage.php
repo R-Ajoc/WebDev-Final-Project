@@ -69,7 +69,9 @@
 				<hr>
 
 				<div class="container">
-					<button id="openPopup" class="ms-4 mb-3 btn btn-primary fw-bolder" name="addProduct">Add Product</button>
+					<button type="button" class="ms-4 mb-3 btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+						Add Product
+					</button>
 					<div class="col rounded ms-3 p-3 inventory-Item text-white">
 						<div class="lowerDiv">Product List Table</div>
 						<table id="productTable" class="display table-bordered">
@@ -108,37 +110,46 @@
 						</table>
 					</div>
 				</div>
-
-				<!-- This Popup form will serves as for adding Items to Inventory -->
-				<div id="popupForm" class="popup"> 
-						<div class="popup-content">
-							<span class="close-btn">&times;</span>
-							<h2>Add Item to Inventory</h2>
-							<form>
-								<div class="input-group mb-3">
-									<span class="input-group-text" id="pName">Product Name</span>
-									<input type="text" class="form-control" name="prodName" aria-label="prodName" aria-describedby="pName">
+				
+				<!-- This Modal Popup form will serves as for adding Items to Inventory -->
+				<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+					<div class="modal-dialog modal-dialog-centered">
+						<div class="modal-content">
+							<form action=""method="POST">
+								<div class="modal-header">
+									<h5 class="modal-title" id="staticBackdropLabel">Add Item to Inventory</h5>
+									<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 								</div>
-								<div class="input-group mb-3">
-									<label class="input-group-text" for="categoryProd">Category</label>
-									<select class="form-select" id="categoryProd">
-										<option selected>Choose...</option>
-										<option value="1">One</option> <!-- implement here for reloading choices for Category -->
-										<option value="2">Two</option>
-										<option value="3">Three</option>
-									</select>
+								<div class="modal-body">
+									<div class="input-group mb-3">
+										<span class="input-group-text" id="pName">Product Name</span>
+										<input type="text" class="form-control" name="prodName" aria-label="prodName" aria-describedby="pName">
+									</div>
+									<div class="input-group mb-3">
+										<label class="input-group-text" for="categoryProd">Category</label>
+										<select class="form-select" id="categoryProd">
+											<option selected>Choose...</option>
+											<option value="1">One</option> <!-- implement here for reloading choices for Category -->
+											<option value="2">Two</option>
+											<option value="3">Three</option>
+										</select>
+									</div>
+									<div class="input-group mb-3">
+										<span class="input-group-text" id="price">Price</span>
+										<input type="text" class="form-control" name="prodPrice" aria-label="prodPrice" aria-describedby="price">
+									</div>
+									<div class="input-group mb-3">
+										<span class="input-group-text" id="price">Quantity</span>
+										<input type="text" class="form-control" name="pQuantity" aria-label="pQuantity" aria-describedby="quantity">
+									</div>
 								</div>
-								<div class="input-group mb-3">
-									<span class="input-group-text" id="price">Price</span>
-									<input type="text" class="form-control" name="prodPrice" aria-label="prodPrice" aria-describedby="price">
+								<div class="modal-footer">
+									<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+									<button type="submit" class="btn btn-primary">Submit</button>
 								</div>
-								<div class="input-group mb-3">
-									<span class="input-group-text" id="price">Quantity</span>
-									<input type="text" class="form-control" name="pQuantity" aria-label="pQuantity" aria-describedby="quantity">
-								</div>
-								<input class="mt-3 btn btn-success" type="submit" value="Submit">
-							</form>
+							</form>	
 						</div>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -162,34 +173,6 @@
   		const day = String(currentDate.getDate()).padStart(2, '0');
   		const formattedDate = `${year}-${month}-${day}`; //YYYY-MM-DD format
   		document.getElementById("currentDate").textContent = "Date: "+ formattedDate;
-
-		//This portion to display Pop-up Form in Adding Items to Inventory
-		document.addEventListener('DOMContentLoaded', () => {
-			const openPopupBtn = document.getElementById('openPopup');
-			const popupForm = document.getElementById('popupForm');
-			const closeBtn = document.querySelector('.close-btn');
-
-			console.log('Script loaded: openPopupBtn =', openPopupBtn, 'popupForm =', popupForm);
-
-			popupForm.style.display = 'none';
-
-			openPopupBtn.addEventListener('click', () => {
-				console.log('Add Product button clicked');
-				popupForm.style.display = 'flex';
-			});
-
-			closeBtn.addEventListener('click', () => {
-				console.log('Close button clicked');
-				popupForm.style.display = 'none';
-			});
-
-			window.addEventListener('click', (event) => {
-				if (event.target === popupForm) {
-					console.log('Overlay clicked');
-					popupForm.style.display = 'none';
-				}
-			});
-		});
 
 	</script>
 
