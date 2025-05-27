@@ -50,7 +50,7 @@ class ProductController {
         echo json_encode($products);
     }
 
-    // Get top-selling product (for a given month)
+    // Get top-selling product
     public function getTopSellingProduct() {
         if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['month'])) {
             $month = $_GET['month']; // format: YYYY-MM
