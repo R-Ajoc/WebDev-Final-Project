@@ -59,5 +59,14 @@ class Product {
     return $stmt->fetch(PDO::FETCH_ASSOC);
 }
 
+    //new 
+    public function getLowStockProducts($threshold = 5) {
+    $query = "SELECT product_name, category, price, quantity FROM products WHERE quantity < :threshold";
+    $stmt = $this->conn->prepare($query);
+    $stmt->bindParam(':threshold', $threshold, PDO::PARAM_INT);
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC); 
+}
+
 }
 ?>
