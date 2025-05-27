@@ -21,13 +21,13 @@ switch ($action) {
             // Validate inputs; redirect back on failure
             if ($product_name === '' || $category === '' || $price === false || $quantity === false) {
                 $_SESSION['error'] = "Invalid input data. Please try again.";
-                header("Location: ../view/inventorypage.php");
+                header("Location: ../view/InventoryPage.php");
                 exit();
             }
 
             $product->add($product_name, $category, $price, $quantity);
             $_SESSION['success'] = "Product added successfully.";
-            header("Location: ../view/inventorypage.php");
+            header("Location: ../view/InventoryPage.php");
             exit();
         }
         break;
@@ -42,13 +42,13 @@ switch ($action) {
 
             if ($id === false || $product_name === '' || $category === '' || $price === false || $quantity === false) {
                 $_SESSION['error'] = "Invalid input data. Please try again.";
-                header("Location: ../view/inventorypage.php");
+                header("Location: ../view/InventoryPage.php");
                 exit();
             }
 
             $product->update($id, $product_name, $category, $price, $quantity);
             $_SESSION['success'] = "Product updated successfully.";
-            header("Location: ../view/inventorypage.php");
+            header("Location: ../view/InventoryPage.php");
             exit();
         }
         break;
@@ -62,13 +62,18 @@ switch ($action) {
             } else {
                 $_SESSION['error'] = "Invalid product ID.";
             }
-            header("Location: ../view/inventorypage.php");
+            header("Location: ../view/InventoryPage.php");
             exit();
         }
         break;
 
+    case 'getTotalProducts':
+            $result = $product->getTotalProducts();
+            echo json_encode($result);
+            break;
+
     default:
-        header("Location: ../view/inventorypage.php");
+        header("Location: ../view/InventoryPage.php");
         exit();
 }
 ?>
