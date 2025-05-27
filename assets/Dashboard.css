@@ -1,0 +1,125 @@
+.Inventory {
+    margin-left: 250px; 
+    padding: 20px;
+}
+
+
+.inventory-Item {
+    background-color: #004aad;
+    padding: 20px;
+    border-radius: 10px;
+    color: white;
+}
+
+.inventory-Item table.dataTable {
+    background-color: white !important;
+    color: black !important;
+    border-radius: 6px;
+}
+
+.table-header {
+    color: white;
+    font-weight: bold;
+    margin-bottom: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+    font-size: 1.3rem;
+}
+
+.inventory-Item .dataTables_filter {
+    color: black;
+    margin: 0;
+    padding: 0;
+}
+
+.inventory-Item .dataTables_filter input {
+    background-color: white !important;
+    border-radius: 25px !important;
+    border: 1px solid #ccc !important;
+    padding: 4px 12px !important;
+    color: black !important;
+    width: 180px;
+    height: 32px;
+}
+
+.inventory-Item .dataTables_filter label {
+    margin: 0;
+    font-weight: normal;
+}
+
+.inventory-Item .dataTables_filter label::before {
+    content: 'Search Product: ';
+    font-weight: normal;
+    color: white;
+    margin-right: 6px;
+}
+
+.actionButton .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.85rem;
+}
+
+.inventory-Item table.dataTable thead th {
+    position: sticky;
+    top: 0;
+    background-color: #f1f1f1;
+    z-index: 1;
+}
+
+#productTable_wrapper .dataTables_scrollBody {
+    max-height: 300px !important;
+}
+
+h1 {
+    font-size: 1.5rem;
+}
+
+#currentDate {
+    font-size: 1rem;
+}
+
+.low-stock-alert {
+  background-color: #004aad;
+  color: #fff;
+  padding: 1rem;
+  border-radius: 0.5rem;
+}
+
+.low-stock-alert h4 {
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.low-stock-alert table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #0a3d91; 
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.low-stock-alert table thead tr {
+  background-color: #003375;
+}
+
+.low-stock-alert table th,
+.low-stock-alert table td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.low-stock-alert table th {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.low-stock-alert table tbody tr:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.low-stock-alert p {
+  margin: 0;
+  font-style: italic;
+  color: #d1d9ff;
+}
