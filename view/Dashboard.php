@@ -4,7 +4,6 @@ require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../model/Product.php';
 require_once __DIR__ . '/../model/Transaction.php';
 
-
 $database = new Database();
 $conn = $database->getConnection();
 
@@ -19,6 +18,7 @@ $transaction = new Transaction($conn);
 $totalProducts = $product->getTotalProducts();
 $monthlySales = $transaction->getMonthlySales(date('m'), date('Y'));
 $topSelling = $product->getTopSelling(date('Y-m'));
+$lowStockProducts = $product->getLowStockProducts(5);  
 ?>
 
 <!DOCTYPE html>
@@ -30,7 +30,7 @@ $topSelling = $product->getTopSelling(date('Y-m'));
     <link href="../assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../assets/jQuery/jquery-ui.css">
     <link href="../assets/DataTables/datatables.min.css" rel="stylesheet">
-    <link href="../assets/inventory.css" rel="stylesheet">
+    <link href="../assets/Dashboard.css" rel="stylesheet">
 </head>
 <body>
     <?php include 'sidebar.php'; ?>
@@ -49,9 +49,37 @@ $topSelling = $product->getTopSelling(date('Y-m'));
         <div class="main-content">
 
             <!-- Stock Alert, mostly suwat ra, wala pakoy idea unsaon jud -->
+             <!-- Stock Alert, updated -->
             <div class="mb-4">
-                <div class="rounded p-4 text-white" style="background-color: #004aad;">
+                <div class="low-stock-alert">
                     <h4 class="mb-0">Stock Alert: Check low inventory levels regularly!</h4>
+                    <br>
+                    <?php if (!empty($lowStockProducts)): ?>
+                        <p class="mb-0" style="color:rgb(233, 28, 13)">WARNING! LOW STOCK ON SOME ITEMS!</p>
+                        
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Product Name</th>
+                                    <th>Category</th>
+                                    <th>Price</th>
+                                    <th>Quantity</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($lowStockProducts as $item): ?>
+                                    <tr>
+                                        <td><?= htmlspecialchars($item['product_name']) ?></td>
+                                        <td><?= htmlspecialchars($item['category']) ?></td>
+                                        <td><?= number_format($item['price'], 2) ?></td>
+                                        <td><?= intval($item['quantity']) ?></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    <?php else: ?>
+                        <p>No low stock items found.</p>
+                    <?php endif; ?>
                 </div>
             </div>
 
