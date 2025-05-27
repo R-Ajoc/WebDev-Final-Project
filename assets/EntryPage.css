@@ -1,0 +1,61 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #f8f9fa;
+    font-family: 'Segoe UI', Verdana, sans-serif;
+}
+
+/* Login box */
+.login-wrapper {
+    background-color: white;
+    padding: 2rem 2.5rem;
+    border-radius: 12px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    width: 100%;
+    max-width: 500px;
+}
+
+/* SARISMART title */
+.login-title {
+    font-size: 4.5rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.login-subtitle {
+    color: #dc3545;
+    margin-bottom: 1.5rem;
+    font-size: 1rem;
+    max-width: 280px;      
+    margin-left: auto;     
+    margin-right: auto;
+}
+
+/* Login Button */
+.btn-login {
+    padding: 0.5rem 2rem;
+    font-size: 1rem;
+    border-radius: 50px;
+}
+
+.login-form input {
+    text-align: center;
+    font-size: 1rem;
+    padding: 0.6rem;
+    max-width: 280px;      
+    margin-left: auto;     
+    margin-right: auto;
+}
+
+.alert {
+    text-align: center;
+    font-size: 1rem;
+    padding: 0.6rem;
+    max-width: 300px;      
+    margin-left: auto;     
+    margin-right: auto;
+}
