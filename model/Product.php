@@ -43,12 +43,21 @@ class Product {
         return $products;
     }
 
-    public function getTopSelling() {
-        $stmt = $this->conn->prepare("CALL TopSelling()");
-        $stmt->execute();
-        $topProducts = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        $stmt->closeCursor();
-        return $topProducts;
-    }
+    public function getTopSelling($targetMonth) {
+    $stmt = $this->conn->prepare("CALL TopSelling(:target_month)");
+    $stmt->bindParam(':target_month', $targetMonth);
+    $stmt->execute();
+    $topProducts = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $stmt->closeCursor(); 
+    return $topProducts;
+}
+
+    // new
+    public function getTotalProducts() {
+    $stmt = $this->conn->prepare("SELECT COUNT(*) AS total FROM products");
+    $stmt->execute();
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
 }
 ?>
