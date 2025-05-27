@@ -1,61 +1,47 @@
 <?php
-require_once 'model/Transaction.php'; 
-require_once 'config/Database.php';  // may need adjustment since db is not created yet at this point
+require_once '../config/Database.php';
+require_once '../model/Transaction.php';
 
-class TransactionController {
-    private $transactionModel;
+$db = new Database();
+$conn = $db->getConnection();
 
-    public function __construct() {
-        $db = (new Database())->connect(); 
-        $this->transactionModel = new Transaction($db);
-    }
+$transaction = new Transaction($conn);
 
-    // create Transactions
-    public function createTransaction() {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $items = $_POST['items'] ?? [];
+// Determine which action to take
+if (isset($_GET['action'])) {
+    $action = $_GET['action'];
 
-            if (!empty($items)) {
+    switch ($action) {
+        case 'getAll':
+            $result = $transaction->getAll();
+            echo json_encode($result);
+            break;
+
+        case 'getMonthlySales':
+            $month = isset($_GET['month']) ? $_GET['month'] : date('m');
+            $year = isset($_GET['year']) ? $_GET['year'] : date('Y');
+            $result = $transaction->getMonthlySales($month, $year);
+            echo json_encode($result);
+            break;
+
+        case 'create':
+            if (isset($_POST['items'])) {
+                $items = json_decode($_POST['items'], true);
                 try {
-                    $transactionId = $this->transactionModel->create($items);
-                    echo json_encode([
-                        'success' => true,
-                        'message' => 'Transaction created successfully.',
-                        'transaction_id' => $transactionId
-                    ]);
+                    $transaction_id = $transaction->create($items);
+                    echo json_encode(['success' => true, 'transaction_id' => $transaction_id]);
                 } catch (Exception $e) {
-                    http_response_code(500);
-                    echo json_encode([
-                        'success' => false,
-                        'message' => 'Failed to create transaction.',
-                        'error' => $e->getMessage()
-                    ]);
+                    echo json_encode(['success' => false, 'message' => $e->getMessage()]);
                 }
             } else {
-                http_response_code(400);
-                echo json_encode([
-                    'success' => false,
-                    'message' => 'No items provided.'
-                ]);
+                echo json_encode(['success' => false, 'message' => 'Missing items']);
             }
-        }
-    }
+            break;
 
-    // get transactions
-    public function getAllTransactions() {
-        try {
-            $transactions = $this->transactionModel->getAll();
-            echo json_encode([
-                'success' => true,
-                'data' => $transactions
-            ]);
-        } catch (Exception $e) {
-            http_response_code(500);
-            echo json_encode([
-                'success' => false,
-                'message' => 'Failed to retrieve transactions.',
-                'error' => $e->getMessage()
-            ]);
-        }
+        default:
+            echo json_encode(['error' => 'Unknown action']);
     }
+} else {
+    echo json_encode(['error' => 'No action specified']);
 }
+?>
