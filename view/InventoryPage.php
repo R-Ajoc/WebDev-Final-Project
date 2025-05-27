@@ -35,10 +35,7 @@ unset($_SESSION['success'], $_SESSION['error']);
     <div class="Inventory">
         <div class="dashBoard-content py-3">
             <div class="header-content d-flex justify-content-between align-items-center rounded p-3" style="background-color: transparent;">
-                <h1 class="ms-4 d-flex align-items-center fw-bold" style="color: #004aad;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" class="bi bi-box-seam me-2" viewBox="0 0 16 16">
-                        <path d="M9.828.122a.5.5 0 0 1 .344 0l5 2a.5.5 0 0 1 .328.47v9.416a.5.5 0 0 1-.328.47l-5 2a.5.5 0 0 1-.344 0l-5-2a.5.5 0 0 1-.328-.47V2.592a.5.5 0 0 1 .328-.47l5-2zM10 1.203 6 2.57v9.118l4 1.856V1.203z"/>
-                    </svg>
+                <h1 class="ms-4 d-flex align-items-center fw-bold" style="color: #004aad; font-size: 2rem; font-weight: 600;">
                     Inventory
                 </h1>
                 <h2 id="currentDate" class="me-4 text-secondary fst-italic" style="font-weight: 400; font-size: 1.25rem;"></h2>
@@ -224,14 +221,14 @@ unset($_SESSION['success'], $_SESSION['error']);
         const successAlert = document.getElementById("success-alert");
         if (successAlert) {
             setTimeout(() => {
-               
+                // Optional fade-out effect
                 successAlert.classList.add("fade");
                 successAlert.classList.remove("show");
 
-               
+                // Completely hide the alert after transition
                 setTimeout(() => {
                     successAlert.style.display = "none";
-                }, 500); // Matches Bootstrap's fade transition duration
+                }, 500); 
             }, 1000); // Delay before starting fade-out (1 second)
         }
     });
