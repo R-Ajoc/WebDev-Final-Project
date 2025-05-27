@@ -6,6 +6,7 @@
     <title>SARISMART Login</title>
     <link href="../assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link href="../assets/style.css" rel="stylesheet">
+    <link href="../assets/EntryPage.css" rel="stylesheet">
 </head>
 <body>
     <div class="login-wrapper">
