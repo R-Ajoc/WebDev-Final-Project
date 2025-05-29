@@ -292,3 +292,27 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
+
+
+-- eyy rhaz unsa ning create definer nimo?
+//Get sales log for sale log
+DELIMITER $$
+
+CREATE PROCEDURE GetSalesLog()
+BEGIN
+    SELECT 
+        t.transaction_id,
+        ti.product_id,
+        p.product_name,
+        ti.quantity,
+        ti.subtotal,
+        t.transaction_date
+    FROM transactions t
+    JOIN transaction_items ti ON t.transaction_id = ti.transaction_id
+    JOIN products p ON ti.product_id = p.product_id
+    ORDER BY t.transaction_date DESC;
+END $$
+
+DELIMITER ;
+
