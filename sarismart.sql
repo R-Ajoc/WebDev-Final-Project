@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 27, 2025 at 11:57 AM
+-- Generation Time: May 29, 2025 at 09:08 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -22,50 +22,67 @@ SET time_zone = "+00:00";
 --
 
 DELIMITER $$
+
 --
 -- Procedures
 --
+
 CREATE DEFINER=`root`@`localhost` PROCEDURE `AddProduct` (IN `p_product_name` VARCHAR(100), IN `p_category` ENUM('Drinks','Snacks','Canned Goods','Others'), IN `p_price` DECIMAL(10,2), IN `p_quantity` INT)   BEGIN
     INSERT INTO products (product_name, category, price, quantity)
     VALUES (p_product_name, p_category, p_price, p_quantity);
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `CreateTransaction` (IN `p_items` JSON, OUT `p_transaction_id` INT)   BEGIN
+-- Fixed createTransaction procedure to use correct column names
+DROP PROCEDURE IF EXISTS createTransaction $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `createTransaction` (IN `p_items` JSON, OUT `p_transaction_id` INT)
+BEGIN
     DECLARE v_total DECIMAL(10,2) DEFAULT 0;
     DECLARE v_now DATETIME;
-    
-    SET v_now = NOW();
+    DECLARE idx INT DEFAULT 0;
+    DECLARE total_items INT;
 
-    -- Insert the main transaction first
+    DECLARE v_product_id INT;
+    DECLARE v_quantity INT;
+    DECLARE v_price DECIMAL(10,2);
+    DECLARE v_subtotal DECIMAL(10,2);
+
+    SET v_now = NOW();
+    SET total_items = JSON_LENGTH(p_items);
+
+    -- Insert the main transaction
     INSERT INTO transactions (transaction_date, total_amount)
     VALUES (v_now, 0);
-    
+
     SET p_transaction_id = LAST_INSERT_ID();
 
-    -- Loop through JSON array of items
-    WHILE JSON_LENGTH(p_items) > 0 DO
-        SET @idx = JSON_LENGTH(p_items) - 1;
-        
-        SET @product_id = JSON_UNQUOTE(JSON_EXTRACT(p_items, CONCAT('$[', @idx, '].product_id')));
-        SET @quantity = JSON_UNQUOTE(JSON_EXTRACT(p_items, CONCAT('$[', @idx, '].quantity')));
-        
-        SET @price = (SELECT price FROM products WHERE product_id = @product_id LIMIT 1);
-        SET @subtotal = @price * @quantity;
-        SET v_total = v_total + @subtotal;
-        
-        INSERT INTO transaction_items (transaction_id, product_id, quantity)
-        VALUES (p_transaction_id, @product_id, @quantity);
+    -- Loop through each item in the JSON array
+    WHILE idx < total_items DO
+        SET v_product_id = JSON_UNQUOTE(JSON_EXTRACT(p_items, CONCAT('$[', idx, '].product_id')));
+        SET v_quantity = JSON_UNQUOTE(JSON_EXTRACT(p_items, CONCAT('$[', idx, '].quantity')));
 
-        -- Deduct stock
-        UPDATE products SET quantity_in_stock = quantity_in_stock - @quantity
-        WHERE product_id = @product_id;
-        
-        SET p_items = JSON_REMOVE(p_items, CONCAT('$[', @idx, ']'));
+        -- Get product price
+        SELECT price INTO v_price FROM products WHERE product_id = v_product_id LIMIT 1;
+
+        -- Calculate subtotal
+        SET v_subtotal = v_price * v_quantity;
+        SET v_total = v_total + v_subtotal;
+
+        -- Insert transaction item with subtotal
+        INSERT INTO transaction_items (transaction_id, product_id, quantity, subtotal)
+        VALUES (p_transaction_id, v_product_id, v_quantity, v_subtotal);
+
+        -- Deduct stock (your column is `quantity`, not `quantity_in_stock`)
+        UPDATE products SET quantity = quantity - v_quantity
+        WHERE product_id = v_product_id;
+
+        SET idx = idx + 1;
     END WHILE;
 
-    -- Update total
-    UPDATE transactions SET total_amount = v_total WHERE transaction_id = p_transaction_id;
-END$$
+    -- Update total in transaction
+    UPDATE transactions SET total_amount = v_total
+    WHERE transaction_id = p_transaction_id;
+END $$
+-- End Copilot fix
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `DeleteProduct` (IN `p_product_id` INT)   BEGIN
     DELETE FROM products WHERE product_id = p_product_id;
@@ -170,7 +187,9 @@ INSERT INTO `products` (`product_id`, `product_name`, `price`, `quantity`, `cate
 (2, 'Royal', 18.00, 12, 'Drinks'),
 (3, 'Piattos', 12.00, 6, 'Snacks'),
 (4, 'Rebisco', 8.00, 24, 'Snacks'),
-(6, 'Sprite', 15.00, 12, 'Drinks');
+(6, 'Sprite', 15.00, 12, 'Drinks'),
+(7, 'Nova', 16.00, 6, 'Snacks'),
+(9, 'Beef Loaf', 29.00, 24, 'Canned Goods');
 
 -- --------------------------------------------------------
 
@@ -211,6 +230,7 @@ CREATE TABLE `transaction_items` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
+
 
 --
 -- Structure for view `sales_summary`
@@ -263,7 +283,7 @@ ALTER TABLE `admin_security`
 -- AUTO_INCREMENT for table `products`
 --
 ALTER TABLE `products`
-  MODIFY `product_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `product_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `transactions`
@@ -292,27 +312,3 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-
-
-
--- eyy rhaz unsa ning create definer nimo?
-//Get sales log for sale log
-DELIMITER $$
-
-CREATE PROCEDURE GetSalesLog()
-BEGIN
-    SELECT 
-        t.transaction_id,
-        ti.product_id,
-        p.product_name,
-        ti.quantity,
-        ti.subtotal,
-        t.transaction_date
-    FROM transactions t
-    JOIN transaction_items ti ON t.transaction_id = ti.transaction_id
-    JOIN products p ON ti.product_id = p.product_id
-    ORDER BY t.transaction_date DESC;
-END $$
-
-DELIMITER ;
-
