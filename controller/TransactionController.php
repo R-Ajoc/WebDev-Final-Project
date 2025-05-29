@@ -70,6 +70,12 @@ if (isset($_GET['action'])) {
             $result = $transaction->getMonthlyTransactionCount($month, $year);
             echo json_encode($result);
             break;
+        
+         //new - getSalesLog
+        case 'getSalesLog':
+            $result = $transaction->getSalesLog();
+            echo json_encode($result);
+            break;
 
         default:
             echo json_encode(['error' => 'Unknown action']);
