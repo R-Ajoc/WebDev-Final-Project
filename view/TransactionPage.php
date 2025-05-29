@@ -42,10 +42,12 @@
                             <table id="posTable" class="table table-bordered text-center align-middle mb-0 small">
                                 <thead style="background-color: #e9ecef;">
                                     <tr>
+                                        <th style="display:none;">Product ID</th>
                                         <th>Product Name</th>
                                         <th>Qty</th>
                                         <th>Price</th>
                                         <th>Subtotal</th>
+                                        <th></th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -150,7 +152,8 @@
                 searching: false,
                 info: false,
                 columnDefs: [
-                    { orderable: false, targets: 4 } 
+                    { orderable: false, targets: 5 }, // Remove button
+                    { visible: false, targets: 0 }    // Hide Product ID (column 0)
                 ]
             });
 
@@ -158,7 +161,7 @@
                 paging: false,
                 searching: false,
                 info: false,
-                order: [[4, 'desc']] 
+                order: [[4, 'desc']]
             });
 
             // Load products into dropdown
@@ -189,7 +192,7 @@
                 var rowIndex = -1;
                 posTable.rows().every(function (rowIdx, tableLoop, rowLoop) {
                     var data = this.data();
-                    if (data[0] === productName) {
+                    if (data[0] === productId) {
                         rowIndex = rowIdx;
                     }
                 });
@@ -197,10 +200,11 @@
                 if (rowIndex > -1) {
                     // Update existing row
                     var rowData = posTable.row(rowIndex).data();
-                    var newQty = parseInt(rowData[1]) + qty;
+                    var newQty = parseInt(rowData[2]) + qty;
                     var newSubtotal = price * newQty;
 
                     posTable.row(rowIndex).data([
+                        productId,
                         productName,
                         newQty,
                         `₱${price.toFixed(2)}`,
@@ -210,6 +214,7 @@
                 } else {
                     // Add new row
                     posTable.row.add([
+                        productId, //hidden column
                         productName,
                         qty,
                         `₱${price.toFixed(2)}`,
@@ -222,7 +227,6 @@
                 $('#addItemModal').modal('hide');
             });
 
-            
             $('#posTable tbody').on('click', '.remove-item', function () {
                 posTable.row($(this).parents('tr')).remove().draw();
                 updateTotalAmount();
@@ -239,8 +243,7 @@
                 var total = 0;
                 posTable.rows().every(function () {
                     var data = this.data();
-                   
-                    var subtotal = parseFloat(data[3].replace('₱', '')) || 0;
+                    var subtotal = parseFloat(data[4].replace('₱', '')) || 0;
                     total += subtotal;
                 });
                 $('#totalAmount').val('₱' + total.toFixed(2));
@@ -253,10 +256,10 @@
                 posTable.rows().every(function () {
                     var data = this.data();
                     transactionItems.push({
-                        product_name: data[0],
-                        quantity: parseInt(data[1]),
-                        price: parseFloat(data[2].replace('₱', '')),
-                        subtotal: parseFloat(data[3].replace('₱', ''))
+                        product_id: data[0], //hidden id
+                        quantity: parseInt(data[2]), //quantity kay naa na sa index 2 to accomodate hidden id
+                        price: parseFloat(data[3].replace('₱', '')),
+                        subtotal: parseFloat(data[4].replace('₱', ''))
                     });
                 });
 
