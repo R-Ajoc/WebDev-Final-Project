@@ -1,82 +1,38 @@
-body {
-    background-color: #f4f7fa;
-}
 
-.Inventory {
-    padding: 20px;
-}
-
-.panel-box {
-    background-color: #004aad;
-    color: white;
-    padding: 20px;
-    border-radius: 8px;
-    height: 600px;
-    overflow-y: auto;
-    transition: all 0.4s ease;
-}
-
-#posContainer {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: start;
-}
-
-#salesLogContainer {
-    height: 600px;
-}
-
-#salesLogContainer table {
-    background-color: white;
-    color: black;
-    border-radius: 6px;
-    overflow: hidden;
-}
-
-#toggleView {
-    margin-top: 50%;
-    height: 50px;
-    width: 50px;
-    border-radius: 50%;
-    font-weight: bold;
-    font-size: 24px;
-    color: #004aad;
-    border: 2px solid #004aad;
-    background-color: white;
-    transition: background-color 0.3s ease;
-}
-
-#toggleView:hover {
-    background-color: #004aad;
-    color: white;
+#salesLogTable_wrapper .dataTables_filter,
+#salesLogTable_wrapper .dataTables_length,
+#salesLogTable_wrapper .dataTables_info,
+#salesLogTable_wrapper .dataTables_paginate {
+  display: none !important;
 }
 
 
-.flex-container {
-    display: flex;
-    align-items: stretch;
-    gap: 15px;
+.table thead th,
+.table thead {
+  background-color: transparent !important;
+  color: #000 !important;
+  border-bottom: 1px solid #dee2e6;
 }
 
-.flex-container.collapsed #salesLogContainer {
-    width: 0;
-    padding: 0;
-    overflow: hidden;
-    opacity: 0;
+
+.table th,
+.table td {
+  font-size: 0.85rem;
+  vertical-align: middle;
 }
 
-.flex-container.collapsed #posContainer {
-    flex: 1 1 auto;
+
+.btn-sm {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.85rem;
 }
 
-.flex-container.expanded #posContainer {
-    width: 0;
-    padding: 0;
-    overflow: hidden;
-    opacity: 0;
+
+.container-fluid .row > div {
+  margin-bottom: 1.5rem;
 }
 
-.flex-container.expanded #salesLogContainer {
-    flex: 1 1 auto;
+
+.form-control-sm {
+  font-size: 0.85rem;
 }
