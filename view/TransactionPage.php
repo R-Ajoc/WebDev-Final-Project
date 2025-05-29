@@ -1,559 +1,446 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 	<title>SARISMART MANAGEMENT SYSTEM</title>
 
 	<!--JQUERY UI & JS -->
-	<link rel="stylesheet" href="../assets/jquery/base/jquery-ui.css">
+	<link rel="stylesheet" href="../assets/jquery/base/jquery-ui.css" />
 	<script src="../assets/jquery/jquery.js"></script>
 	<script src="../assets/jquery/jquery-ui.js"></script>
 
 	<!-- Bootstrap 5 -->
-	<link href="../assets/css/bootstrap.min.css" rel="stylesheet">
+	<link href="../assets/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
 	<script src="../assets/js/bootstrap.bundle.min.js"></script>
 
-	<link rel="stylesheet" type="text/css" href="../assets/style.css">
+	<link href="../assets/Dashboard.css" rel="stylesheet" />
 
+	<style>
+		body {
+			background-color: #f4f7fa;
+		}
+
+		.Inventory {
+			padding: 20px;
+		}
+
+		/* Blue boxes style */
+		.panel-box {
+			background-color: #004aad;
+			color: white;
+			padding: 20px;
+			border-radius: 8px;
+			height: 600px;
+			overflow-y: auto;
+			transition: all 0.4s ease;
+		}
+
+		#posContainer {
+			/* Make sure full height and scrollable */
+			height: 100%;
+			display: flex;
+			flex-direction: column;
+			justify-content: start;
+		}
+
+		#salesLogContainer {
+			height: 600px;
+		}
+
+		#salesLogContainer table {
+			background-color: white;
+			color: black;
+			border-radius: 6px;
+			overflow: hidden;
+		}
+
+		#toggleView {
+			margin-top: 50%;
+			height: 50px;
+			width: 50px;
+			border-radius: 50%;
+			font-weight: bold;
+			font-size: 24px;
+			color: #004aad;
+			border: 2px solid #004aad;
+			background-color: white;
+			transition: background-color 0.3s ease;
+		}
+
+		#toggleView:hover {
+			background-color: #004aad;
+			color: white;
+		}
+
+		/* Flex container to hold POS and Sales log side by side with toggle in between */
+		.flex-container {
+			display: flex;
+			align-items: stretch;
+			gap: 15px;
+		}
+
+		/* When collapsed, sales log hides or shrinks */
+		.flex-container.collapsed #salesLogContainer {
+			width: 0;
+			padding: 0;
+			overflow: hidden;
+			opacity: 0;
+		}
+
+		.flex-container.collapsed #posContainer {
+			flex: 1 1 auto;
+		}
+
+		/* When expanded, pos hides or shrinks */
+		.flex-container.expanded #posContainer {
+			width: 0;
+			padding: 0;
+			overflow: hidden;
+			opacity: 0;
+		}
+
+		.flex-container.expanded #salesLogContainer {
+			flex: 1 1 auto;
+		}
+	</style>
 </head>
 
 <body>
+	<?php include 'sidebar.php'; ?>
 
-	<div class="container-body d-flex">
-		<div class="sideBar">
-			<div class="sideBar-content">
-				<div class="sideBarlogo d-flex">
-					<img src="../assets/images/store.svg">
-					<div class="logoContent disp-5 text-center text-white">
-						<p class="plogo">
-							STORE MANAGEMENT SYSTEM
-						</p>
-					</div>
-				</div>
-
-				<div class="sideBar-menu">
-					<div class="sideBar-menuContent">
-						<div class="menu-items-top d-block">
-							<a href="Dashboard.php" class="menu-btn btn d-block ms-2"><img src="../assets/images/home.svg" class="menu-logo me-3">Dashboard</a>
-						</div>
-						<div class="menu-items d-block">
-							<a href="InventoryPage.php" class="menu-btn btn d-block ms-2"><img src="../assets/images/inventory.svg" class="menu-logo me-3">Inventory</a>
-						</div>
-						<div class="menu-items d-block">
-							<a href="TransactionPage.php" class="menu-btn btn d-block ms-2"><img src="../assets/images/transaction.svg" class="menu-logo me-3">Transactions</a>
-						</div>
-						<div class="menu-items d-block">
-							<a href="SalesReport.php" class="menu-btn btn d-block ms-2"><img src="../assets/images/sales.svg" class="menu-logo me-3">Sales</a>
-						</div>
-					</div>
-				</div>
-				<div class="sideBar-Exit">
-					<div class="menu-items d-block">
-						<a href="EntryPage.html" class="menu-btn btn d-block ms-2"><img src="../assets/images/logout.svg" class="menu-logo me-3">Logout</a>
-					</div>
-				</div>
-			</div>	
+	<div class="Inventory">
+		<div class="dashBoard-content py-3">
+			<div
+				class="header-content d-flex justify-content-between align-items-center rounded p-3"
+				style="background-color: transparent;"
+			>
+				<h1
+					class="ms-4 d-flex align-items-center fw-bold"
+					style="color: #004aad; font-size: 2rem; font-weight: 600"
+				>
+					Transactions
+				</h1>
+				<h2
+					id="currentDate"
+					class="me-4 text-secondary fst-italic"
+					style="font-weight: 400; font-size: 1.25rem"
+				></h2>
+			</div>
+			<hr class="mt-1" style="border-top: 2px solid #004aad" />
 		</div>
 
-		<div class="dashBoard">
-			<div class="container dashBoard-content">
-				<div class="header-content d-flex justify-content-between">
-				  <h1 class="ms-4">Transaction</h1>
-				  <h2 id="currentDate"></h2>
-				</div>
-				<hr>
-
-				<div class="container">
-					<div class="row">
-						<div class="col-7 rounded p-3 transaction-POS text-white">
-							<div class="d-flex justify-content-between">
-								<h3>POS</h3>
-								<button type="button" class="ms-4 mb-3 btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-									Add Product
-								</button>
-							</div>						
-							<!-- This Modal Popup form will serves as for adding Items to Transaction Table -->
-							<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-								<div class="modal-dialog modal-dialog-centered">
-									<div class="modal-content">
-										<form action=""method="POST">
-											<div class="modal-header">
-												<h5 class="modal-title" id="staticBackdropLabel">Add Item to Transaction Table</h5>
-												<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-											</div>
-											<div class="modal-body">
-												<div class="input-group mb-3">
-													<span class="input-group-text" id="pName">Product Name</span>
-													<input type="text" class="form-control" name="prodName" aria-label="prodName" aria-describedby="pName">
-												</div>
-												<div class="input-group mb-3">
-													<label class="input-group-text" for="categoryProd">Category</label>
-													<select class="form-select" id="categoryProd">
-														<option selected>Choose...</option>
-														<option value="1">One</option> <!-- implement here for reloading choices for Category -->
-														<option value="2">Two</option>
-														<option value="3">Three</option>
-													</select>
-												</div>
-												<div class="input-group mb-3">
-													<span class="input-group-text" id="price">Price</span>
-													<input type="text" class="form-control" name="prodPrice" aria-label="prodPrice" aria-describedby="price" disabled>
-												</div>
-												<div class="input-group mb-3">
-													<span class="input-group-text" id="price">Quantity</span>
-													<input type="text" class="form-control" name="pQuantity" aria-label="pQuantity" aria-describedby="quantity">
-												</div>
-											</div>
-											<div class="modal-footer">
-												<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-												<button type="submit" class="btn btn-primary">Submit</button>
-											</div>
-										</form>	
-									</div>
-								</div>
-							</div>
-							
-							<div class="table-responsive">
-								<table class="table table-bordered transactTable text-center">
-								<thead>
-									<tr>
-										<th>Product Name</th>
-										<th>Qty</th>
-										<th>Price</th>
-									</tr>
-								</thead>
-								<tbody>
-									<tr>
-										<td>123</td>
-										<td>Melona</td>
-										<td>50</td>
-									</tr>
-									<tr>
-										<td>123</td>
-										<td>Melona</td>
-										<td>50</td>
-									</tr>
-									<tr>
-										<td>123</td>
-										<td>Melona</td>
-										<td>50</td>
-									</tr>
-									<tr>
-										<td>123</td>
-										<td>Melona</td>
-										<td>50</td>
-									</tr>
-									<tr>
-										<td>123</td>
-										<td>Melona</td>
-										<td>50</td>
-									</tr>
-									<tr>
-										<td>123</td>
-										<td>Melona</td>
-										<td>50</td>
-									</tr>
-									<tr>
-										<td>123</td>
-										<td>Melona</td>
-										<td>50</td>
-									</tr>
-									<tr>
-										<td>123</td>
-										<td>Melona</td>
-										<td>50</td>
-									</tr>
-									<tr>
-										<td>123</td>
-										<td>Melona</td>
-										<td>50</td>
-									</tr>
-									<tr>
-										<td>123</td>
-										<td>Melona</td>
-										<td>50</td>
-									</tr>
-									<tr>
-										<td>123</td>
-										<td>Melona</td>
-										<td>50</td>
-									</tr>
-									<tr>
-										<td>123</td>
-										<td>Melona</td>
-										<td>50</td>
-									</tr>
-									<tr>
-										<td>123</td>
-										<td>Melona</td>
-										<td>50</td>
-									</tr>
-									<tr>
-										<td>123</td>
-										<td>Melona</td>
-										<td>50</td>
-									</tr>
-									<tr>
-										<td>123</td>
-										<td>Melona</td>
-										<td>50</td>
-									</tr>
-									<tr>
-										<td>123</td>
-										<td>Melona</td>
-										<td>50</td>
-									</tr>
-									<tr>
-										<td>123</td>
-										<td>Melona</td>
-										<td>50</td>
-									</tr>
-									<tr>
-										<td>123</td>
-										<td>Melona</td>
-										<td>50</td>
-									</tr>
-									<tr>
-										<td>123</td>
-										<td>Melona</td>
-										<td>50</td>
-									</tr>
-									<tr>
-										<td>123</td>
-										<td>Melona</td>
-										<td>50</td>
-									</tr>
-									<tr>
-										<td>123</td>
-										<td>Melona</td>
-										<td>50</td>
-									</tr>
-									<tr>
-										<td>123</td>
-										<td>Melona</td>
-										<td>50</td>
-									</tr>
-									<tr>
-										<td>123</td>
-										<td>Melona</td>
-										<td>50</td>
-									</tr>
-									<tr>
-										<td>123</td>
-										<td>Melona</td>
-										<td>50</td>
-									</tr>
-									<tr>
-										<td>123</td>
-										<td>Melona</td>
-										<td>50</td>
-									</tr>
-									<tr>
-										<td>123</td>
-										<td>Melona</td>
-										<td>50</td>
-									</tr>
-									<tr>
-										<td>123</td>
-										<td>Melona</td>
-										<td>50</td>
-									</tr>
-									<tr>
-										<td>123</td>
-										<td>Melona</td>
-										<td>50</td>
-									</tr>
-									<tr>
-										<td>123</td>
-										<td>Melona</td>
-										<td>50</td>
-									</tr>
-									<tr>
-										<td>123</td>
-										<td>Melona</td>
-										<td>50</td>
-									</tr>
-									<tr>
-										<td>123</td>
-										<td>Melona</td>
-										<td>50</td>
-									</tr>
-									<tr>
-										<td>123</td>
-										<td>Melona</td>
-										<td>50</td>
-									</tr>
-									<tr>
-										<td>123</td>
-										<td>Melona</td>
-										<td>50</td>
-									</tr>
-									<tr>
-										<td>123</td>
-										<td>Melona</td>
-										<td>50</td>
-									</tr>
-									<tr>
-										<td>123</td>
-										<td>Melona</td>
-										<td>50</td>
-									</tr>
-									<tr>
-										<td>123</td>
-										<td>Melona</td>
-										<td>50</td>
-									</tr>
-									<tr>
-										<td>123</td>
-										<td>Melona</td>
-										<td>50</td>
-									</tr>
-									<tr>
-										<td>123</td>
-										<td>Melona</td>
-										<td>50</td>
-									</tr>
-									<tr>
-										<td>123</td>
-										<td>Melona</td>
-										<td>50</td>
-									</tr>
-									<tr>
-										<td>123</td>
-										<td>Melona</td>
-										<td>50</td>
-									</tr>
-									<tr>
-										<td>123</td>
-										<td>Melona</td>
-										<td>50</td>
-									</tr>
-									<tr>
-										<td>123</td>
-										<td>Melona</td>
-										<td>50</td>
-									</tr>
-									<tr>
-										<td>123</td>
-										<td>Melona</td>
-										<td>50</td>
-									</tr>
-									<tr>
-										<td>123</td>
-										<td>Melona</td>
-										<td>50</td>
-									</tr>
-									<tr>
-										<td>123</td>
-										<td>Melona</td>
-										<td>50</td>
-									</tr>
-									<tr>
-										<td>123</td>
-										<td>Melona</td>
-										<td>50</td>
-									</tr>
-									<tr>
-										<td>123</td>
-										<td>Melona</td>
-										<td>50</td>
-									</tr>
-									<tr>
-										<td>123</td>
-										<td>Melona</td>
-										<td>50</td>
-									</tr>
-								</tbody>
-							</table>
-							</div>
-							
-							<div class="transactOutput mt-2">
-								<div class="calcOut d-flex p-2">
-									<div class="totalAmt">
-										<h5>Total Amount</h5>
-										<div class="resultTotal p-2 mt-2">
-											<h2 id="totalAmountResult">Sample Result</h2> <!-- Every after adding item, SQL Procedure result will dislay here -->
-										</div>
-									</div>
-									<div class="actionTransact">
-										<button class="buttonTransact fw-bolder btn mt-2 btn-success">Record Transaction</button>
-										<button class="buttonTransact fw-bolder btn mt-2 btn-danger">Clear Transaction</button>
-									</div>
-								</div>
-							</div>
+		<div class="main-content">
+			<div class="flex-container collapsed">
+				<!-- POS -->
+				<div id="posContainer" class="panel-box col-md-7">
+					<h2>Point of Sale</h2>
+					<button
+						class="btn btn-light text-primary mb-3"
+						data-bs-toggle="modal"
+						data-bs-target="#addItemModal"
+					>
+						Add Item
+					</button>
+					<table class="table table-bordered table-light">
+						<thead>
+							<tr>
+								<th>Product</th>
+								<th>Qty</th>
+								<th>Price</th>
+								<th>Subtotal</th>
+								<th>Action</th>
+							</tr>
+						</thead>
+						<tbody></tbody>
+					</table>
+					<div class="d-flex justify-content-between align-items-center mt-auto">
+						<div>
+							<button class="btn btn-success" id="submitTransaction">
+								Add Transaction
+							</button>
+							<button class="btn btn-danger" id="clearTransaction">
+								Clear
+							</button>
 						</div>
-						<div class="col rounded ms-2 p-3 transaction-Sales text-white">
-							<h3>Total Monthly Sales</h3>
-							<div class="table-responsive salesTB">
-								<table class="table table-bordered mt-2 salesTable text-center">
-									<thead>
-										<tr>
-											<th>ID</th>
-											<th>Product Name</th>
-											<th>Qty</th>
-											<th>Total Amt</th>
-											<th>Date</th>
-										</tr>
-									</thead>
-									<tbody>
-										<tr>
-											<td>123</td>
-											<td>Melona</td>
-											<td>25</td>
-											<td>54</td>
-											<td>5/27/2025</td>
-										</tr>
-										<tr>
-											<td>123</td>
-											<td>Melona</td>
-											<td>25</td>
-											<td>54</td>
-											<td>5/27/2025</td>
-										</tr>
-										<tr>
-											<td>123</td>
-											<td>Melona</td>
-											<td>25</td>
-											<td>54</td>
-											<td>5/27/2025</td>
-										</tr>
-										<tr>
-											<td>123</td>
-											<td>Melona</td>
-											<td>25</td>
-											<td>54</td>
-											<td>5/27/2025</td>
-										</tr>
-										<tr>
-											<td>123</td>
-											<td>Melona</td>
-											<td>25</td>
-											<td>54</td>
-											<td>5/27/2025</td>
-										</tr>
-										<tr>
-											<td>123</td>
-											<td>Melona</td>
-											<td>25</td>
-											<td>54</td>
-											<td>5/27/2025</td>
-										</tr>
-										<tr>
-											<td>123</td>
-											<td>Melona</td>
-											<td>25</td>
-											<td>54</td>
-											<td>5/27/2025</td>
-										</tr>
-										<tr>
-											<td>123</td>
-											<td>Melona</td>
-											<td>25</td>
-											<td>54</td>
-											<td>5/27/2025</td>
-										</tr>
-										<tr>
-											<td>123</td>
-											<td>Melona</td>
-											<td>25</td>
-											<td>54</td>
-											<td>5/27/2025</td>
-										</tr>
-										<tr>
-											<td>123</td>
-											<td>Melona</td>
-											<td>25</td>
-											<td>54</td>
-											<td>5/27/2025</td>
-										</tr>
-										<tr>
-											<td>123</td>
-											<td>Melona</td>
-											<td>25</td>
-											<td>54</td>
-											<td>5/27/2025</td>
-										</tr>
-										<tr>
-											<td>123</td>
-											<td>Melona</td>
-											<td>25</td>
-											<td>54</td>
-											<td>5/27/2025</td>
-										</tr>
-										<tr>
-											<td>123</td>
-											<td>Melona</td>
-											<td>25</td>
-											<td>54</td>
-											<td>5/27/2025</td>
-										</tr>
-										<tr>
-											<td>123</td>
-											<td>Melona</td>
-											<td>25</td>
-											<td>54</td>
-											<td>5/27/2025</td>
-										</tr>
-										<tr>
-											<td>123</td>
-											<td>Melona</td>
-											<td>25</td>
-											<td>54</td>
-											<td>5/27/2025</td>
-										</tr>
-										<tr>
-											<td>123</td>
-											<td>Melona</td>
-											<td>25</td>
-											<td>54</td>
-											<td>5/27/2025</td>
-										</tr>
-										<tr>
-											<td>123</td>
-											<td>Melona</td>
-											<td>25</td>
-											<td>54</td>
-											<td>5/27/2025</td>
-										</tr>
-										<tr>
-											<td>123</td>
-											<td>Melona</td>
-											<td>25</td>
-											<td>54</td>
-											<td>5/27/2025</td>
-										</tr>
-										<tr>
-											<td>123</td>
-											<td>Melona</td>
-											<td>25</td>
-											<td>54</td>
-											<td>5/27/2025</td>
-										</tr>
-									</tbody>
-								</table>
-							</div>
+						<div class="fs-4 fw-bold">
+							Total: ₱<span id="totalAmount">0.00</span>
+						</div>
+					</div>
+				</div>
+
+				<!-- Toggle Button -->
+				<div
+					class="d-flex flex-column align-items-center justify-content-center"
+					style="width: 60px"
+				>
+					<button id="toggleView" class="btn btn-outline-primary">→</button>
+				</div>
+
+				<!-- Sales Log -->
+				<div id="salesLogContainer" class="panel-box col-md-5">
+					<h2>Sales Log</h2>
+					<table class="table table-striped">
+						<thead>
+							<tr>
+								<th>ID</th>
+								<th>Product</th>
+								<th>Qty</th>
+								<th>Total</th>
+								<th>Date</th>
+							</tr>
+						</thead>
+						<tbody id="salesLogBody"></tbody>
+					</table>
+				</div>
+			</div>
+
+			<!-- Add Item Modal -->
+			<div class="modal fade" id="addItemModal" tabindex="-1">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title">Add Item</h5>
+							<button
+								type="button"
+								class="btn-close"
+								data-bs-dismiss="modal"
+							></button>
+						</div>
+						<div class="modal-body">
+							<form id="addItemForm">
+								<div class="mb-2">
+									<label for="productSelect">Product</label>
+									<select
+										class="form-select"
+										id="productSelect"
+										required
+									></select>
+								</div>
+								<div class="mb-2">
+									<label for="productPrice">Price (₱)</label>
+									<input
+										type="text"
+										class="form-control"
+										id="productPrice"
+										readonly
+									/>
+								</div>
+								<div class="mb-2">
+									<label for="productQty">Quantity</label>
+									<input
+										type="number"
+										class="form-control"
+										id="productQty"
+										value="1"
+										min="1"
+										required
+									/>
+								</div>
+								<div class="mb-2">
+									<label for="productSubtotal">Subtotal (₱)</label>
+									<input
+										type="text"
+										class="form-control"
+										id="productSubtotal"
+										readonly
+									/>
+								</div>
+							</form>
+						</div>
+						<div class="modal-footer">
+							<button
+								type="button"
+								class="btn btn-primary"
+								id="confirmAddItem"
+							>
+								Add to Cart
+							</button>
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
-</body>
 
-<!-- DataTables JS -->
-	<script src="../assets/datatable/datatables.min.js"></script>
-	<script src="../assets/datatable/datatables.js"></script>
+	<script src="../assets/jQuery/jquery.js"></script>
+	<script src="../assets/jQuery/jquery-ui.js"></script>
+	<script src="../assets/bootstrap/js/bootstrap.bundle.min.js"></script>
+	<script src="../assets/DataTables/datatables.min.js"></script>
+
 	<script>
+		function updateTime() {
+			const now = new Date();
+			const date = now.toLocaleDateString();
+			const time = now.toLocaleTimeString();
+			document.getElementById("currentDate").textContent = `${date} ${time}`;
+		}
 
-		//This part is for the Current Date Display
-		const currentDate = new Date();
-		const year = currentDate.getFullYear();
-  		const month = String(currentDate.getMonth() + 1).padStart(2, '0'); // Month is 0-indexed
-  		const day = String(currentDate.getDate()).padStart(2, '0');
-  		const formattedDate = `${year}-${month}-${day}`; //YYYY-MM-DD format
-  		document.getElementById("currentDate").textContent = "Date: "+ formattedDate;
+		updateTime();
+		setInterval(updateTime, 1000);
 
+		let products = [];
+		function loadProducts() {
+			$.getJSON("../controller/ProductController.php?action=getAll", function (data) {
+				products = data;
+				$("#productSelect").empty().append('<option value="">-- Select Product --</option>');
+				data.forEach((product) => {
+					$("#productSelect").append(
+						`<option value="${product.product_id}" data-price="${product.price}">${product.product_name}</option>`
+					);
+				});
+			});
+		}
+
+		$("#productSelect, #productQty").on("change keyup", function () {
+			let price = parseFloat($("#productSelect option:selected").data("price")) || 0;
+			let qty = parseInt($("#productQty").val()) || 1;
+			$("#productPrice").val(price.toFixed(2));
+			$("#productSubtotal").val((price * qty).toFixed(2));
+		});
+
+		$("#confirmAddItem").click(function () {
+			let productId = $("#productSelect").val();
+			let name = $("#productSelect option:selected").text();
+			let price = parseFloat($("#productPrice").val());
+			let qty = parseInt($("#productQty").val());
+			let subtotal = parseFloat($("#productSubtotal").val());
+
+			if (!productId || qty < 1) {
+				alert("Please select a valid product and quantity.");
+				return;
+			}
+
+			addItemToCart({ productId, name, price, qty, subtotal });
+			$("#addItemModal").modal("hide");
+		});
+
+		let cartItems = [];
+
+		function addItemToCart(item) {
+			const existingIndex = cartItems.findIndex((ci) => ci.productId === item.productId);
+			if (existingIndex >= 0) {
+				// If already in cart, increase quantity and subtotal
+				cartItems[existingIndex].qty += item.qty;
+				cartItems[existingIndex].subtotal += item.subtotal;
+			} else {
+				cartItems.push(item);
+			}
+			renderCart();
+		}
+
+		function renderCart() {
+			let tbody = $("table tbody").first();
+			tbody.empty();
+
+			let total = 0;
+			cartItems.forEach((item, idx) => {
+				total += item.subtotal;
+				tbody.append(
+					`<tr>
+						<td>${item.name}</td>
+						<td>${item.qty}</td>
+						<td>₱${item.price.toFixed(2)}</td>
+						<td>₱${item.subtotal.toFixed(2)}</td>
+						<td><button class="btn btn-danger btn-sm remove-item" data-index="${idx}">X</button></td>
+					</tr>`
+				);
+			});
+
+			$("#totalAmount").text(total.toFixed(2));
+		}
+
+		$(document).on("click", ".remove-item", function () {
+			const index = $(this).data("index");
+			cartItems.splice(index, 1);
+			renderCart();
+		});
+
+		$("#clearTransaction").click(function () {
+			cartItems = [];
+			renderCart();
+		});
+
+		$("#submitTransaction").click(function () {
+    if (cartItems.length === 0) {
+        alert("Please add items to the cart before submitting.");
+        return;
+    }
+
+    $.ajax({
+        url: "../controller/TransactionController.php?action=create",
+        method: "POST",
+        data: {
+            items: JSON.stringify(cartItems)
+        },
+        dataType: "json",
+        success: function (response) {
+            if (response.success) {
+                alert("Transaction submitted! Transaction ID: " + response.transaction_id);
+                cartItems = [];
+                renderCart();
+                loadSalesLog();
+            } else {
+                alert("Failed to submit transaction: " + response.message);
+            }
+        },
+        error: function () {
+            alert("Error submitting transaction.");
+        }
+    });
+});
+
+		
+
+		// Sales Log 
+		function loadSalesLog() {
+	$.ajax({
+		url: "../controller/TransactionController.php?action=getSalesLog",
+		method: "GET",
+		dataType: "json",
+		success: function (data) {
+			let tbody = $("#salesLogBody");
+			tbody.empty();
+			data.forEach((log) => {
+				tbody.append(`
+					<tr>
+						<td>${log.transaction_id}</td>
+						<td>${log.product_name}</td>
+						<td>${log.quantity}</td>
+						<td>₱${parseFloat(log.total).toFixed(2)}</td>
+						<td>${log.date_created}</td>
+					</tr>
+				`);
+			});
+		},
+		error: function () {
+			alert("Failed to load sales log.");
+		}
+	});
+}
+
+
+		$(document).ready(function () {
+	loadProducts();
+	loadSalesLog(); // load sales log on page load
+});
+		// Toggle button logic
+		const flexContainer = document.querySelector(".flex-container");
+		const toggleBtn = document.getElementById("toggleView");
+
+		toggleBtn.addEventListener("click", () => {
+			if (flexContainer.classList.contains("collapsed")) {
+				// Expand sales log, hide POS
+				flexContainer.classList.remove("collapsed");
+				flexContainer.classList.add("expanded");
+				toggleBtn.textContent = "←";
+			} else {
+				// Expand POS, hide sales log
+				flexContainer.classList.remove("expanded");
+				flexContainer.classList.add("collapsed");
+				toggleBtn.textContent = "→";
+			}
+		});
 	</script>
-
+</body>
 </html>
