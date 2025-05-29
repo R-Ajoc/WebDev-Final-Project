@@ -6,30 +6,44 @@ class Transaction {
         $this->conn = $db;
     }
 
-   
+    // Create a new transaction using the stored procedure
     public function create($items) {
-        try {
-            $this->conn->beginTransaction();
+    try {
+        $this->conn->beginTransaction();
 
-            $itemsJson = json_encode($items);
-
-            
-            $stmt = $this->conn->prepare("CALL CreateTransaction(:p_items, @p_transaction_id)");
-            $stmt->bindParam(':p_items', $itemsJson);
-            $stmt->execute();
-            $stmt->closeCursor();
-
-           
-            $result = $this->conn->query("SELECT @p_transaction_id AS transaction_id");
-            $transaction_id = $result->fetch(PDO::FETCH_ASSOC)['transaction_id'];
-
-            $this->conn->commit();
-            return $transaction_id;
-        } catch (Exception $e) {
-            $this->conn->rollBack();
-            throw $e;
+        
+        foreach ($items as $item) {
+            if (!isset($item['product_id']) || !isset($item['quantity'])) {
+                throw new Exception('Invalid item structure. Each item must have product_id and quantity.');
+            }
         }
+
+       
+        $itemsJson = json_encode($items);
+
+        
+        $stmt = $this->conn->prepare("CALL CreateTransaction(:p_items, @p_transaction_id)");
+        $stmt->bindParam(':p_items', $itemsJson);
+        $stmt->execute();
+        $stmt->closeCursor();
+
+
+        $result = $this->conn->query("SELECT @p_transaction_id AS transaction_id");
+        $transaction_id = $result->fetch(PDO::FETCH_ASSOC)['transaction_id'];
+
+        $this->conn->commit();
+
+       
+        return [
+            'transaction_id' => $transaction_id,
+            'items' => $items
+        ];
+    } catch (Exception $e) {
+        $this->conn->rollBack();
+        throw $e;
     }
+}
+
 
     // Get all transactions
     public function getAll() {
