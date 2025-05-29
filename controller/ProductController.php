@@ -78,7 +78,13 @@ switch ($action) {
         $result = $product->getLowStockProducts($threshold);
         echo json_encode($result);
         break;
-
+    
+    case 'getAll':
+        $allProducts = $product->getAll();
+        header('Content-Type: application/json');
+        echo json_encode($allProducts);
+        exit();
+        
     default:
         header("Location: ../view/InventoryPage.php");
         exit();
