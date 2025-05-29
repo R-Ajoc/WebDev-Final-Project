@@ -27,16 +27,37 @@ if (isset($_GET['action'])) {
         case 'create':
             if (isset($_POST['items'])) {
                 $items = json_decode($_POST['items'], true);
+
+                // Basic validation
+                $valid = is_array($items);
+                foreach ($items as $item) {
+                    if (!isset($item['product_id']) || !isset($item['quantity'])) {
+                        $valid = false;
+                        break;
+                    }
+                }
+
+                if (!$valid) {
+                    echo json_encode(['success' => false, 'message' => 'Invalid item format.']);
+                    break;
+                }
+
                 try {
-                    $transaction_id = $transaction->create($items);
-                    echo json_encode(['success' => true, 'transaction_id' => $transaction_id]);
+                    $transaction_result = $transaction->create($items);
+                    echo json_encode([
+                        'success' => true,
+                        'transaction_id' => $transaction_result['transaction_id'],
+                        'items' => $transaction_result['items']
+                    ]);
                 } catch (Exception $e) {
-                    echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+                    error_log($e->getMessage()); // Don't expose to frontend
+                    echo json_encode(['success' => false, 'message' => 'Transaction failed.']);
                 }
             } else {
-                echo json_encode(['success' => false, 'message' => 'Missing items']);
+                echo json_encode(['success' => false, 'message' => 'Missing items.']);
             }
             break;
+
 
         case 'getTotalTransactions':
             $result = $transaction->getTotalTransactions();
