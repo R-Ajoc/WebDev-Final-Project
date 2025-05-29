@@ -3,7 +3,7 @@
   <div>
     <div class="brand-box mb-4">
       <div class="logo-circle">
-        <img src="../assets/images/logo-placeholder.png" alt="Logo">
+        <img src="../assets/images/logoBuzz.png" alt="Logo">
       </div>
       <div class="mt-2 fw-bold" style="font-size: 14px;">Store<br>Management<br>System</div>
     </div>
