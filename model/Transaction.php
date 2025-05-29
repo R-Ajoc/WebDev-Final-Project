@@ -72,11 +72,13 @@ class Transaction {
     //new
     public function getMonthlyTransactionCount($month, $year) {
     $stmt = $this->conn->prepare("SELECT COUNT(*) AS total_transactions FROM transactions WHERE MONTH(transaction_date) = :month AND YEAR(transaction_date) = :year");
-    $stmt->bindParam(':month', $month);
-    $stmt->bindParam(':year', $year);
+    $stmt->bindParam(':month', $month, PDO::PARAM_INT);
+    $stmt->bindParam(':year', $year, PDO::PARAM_INT);
     $stmt->execute();
-    return $stmt->fetch(PDO::FETCH_ASSOC);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    return $row['total_transactions'] ?? 0;
     }
+    
 
     //new - getSalesLog
     public function getSalesLog() {
