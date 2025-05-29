@@ -48,6 +48,14 @@ class Transaction {
     return $stmt->fetch(PDO::FETCH_ASSOC);
 }
 
+    //new
+    public function getSalesLog() {
+    $query = "CALL GetSalesLog()"; 
+    $stmt = $this->conn->prepare($query);
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
 }
 ?>
 
