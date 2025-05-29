@@ -38,6 +38,12 @@ if (isset($_GET['action'])) {
             }
             break;
 
+        //new - for sales log
+             case 'getSalesLog':
+                $result = $transaction->getSalesLog();
+                echo json_encode($result);
+                break;
+
         default:
             echo json_encode(['error' => 'Unknown action']);
     }
