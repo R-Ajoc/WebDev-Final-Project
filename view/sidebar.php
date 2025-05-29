@@ -24,7 +24,7 @@
       </a>
       <div class="divider"></div>
 
-      <a href="Sales.php" class="nav-link">
+      <a href="SalesReport.php" class="nav-link">
         <img src="../assets/images/sales.svg" class="icon" alt="Sales Icon"> Sales
       </a>
       <div class="divider"></div>
