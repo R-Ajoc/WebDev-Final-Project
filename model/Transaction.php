@@ -22,7 +22,7 @@ class Transaction {
         $itemsJson = json_encode($items);
 
         
-        $stmt = $this->conn->prepare("CALL CreateTransaction(:p_items, @p_transaction_id)");
+        $stmt = $this->conn->prepare("CALL createTransaction(:p_items, @p_transaction_id)");
         $stmt->bindParam(':p_items', $itemsJson);
         $stmt->execute();
         $stmt->closeCursor();
@@ -78,6 +78,25 @@ class Transaction {
     return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
+    //new - getSalesLog
+    public function getSalesLog() {
+    $stmt = $this->conn->prepare("
+        SELECT 
+            t.transaction_id, 
+            p.product_name, 
+            ti.quantity, 
+            ti.subtotal AS total, 
+            t.transaction_date AS date_created
+        FROM transactions t
+        JOIN transaction_items ti ON t.transaction_id = ti.transaction_id
+        JOIN products p ON ti.product_id = p.product_id
+        ORDER BY t.transaction_date DESC
+    ");
+    $stmt->execute();
+    $salesLog = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $stmt->closeCursor();
+    return $salesLog;
+}
 
 }
 ?>
