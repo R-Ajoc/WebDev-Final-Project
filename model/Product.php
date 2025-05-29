@@ -43,13 +43,13 @@ class Product {
         return $products;
     }
 
-    public function getTopSelling($targetMonth) {
+    public function getTopSelling($yearMonth) {
     $stmt = $this->conn->prepare("CALL TopSelling(:target_month)");
-    $stmt->bindParam(':target_month', $targetMonth);
+    $stmt->bindParam(':target_month', $yearMonth);
     $stmt->execute();
-    $topProducts = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    $stmt->closeCursor(); 
-    return $topProducts;
+    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $stmt->closeCursor();
+    return $result;
 }
 
     // new
