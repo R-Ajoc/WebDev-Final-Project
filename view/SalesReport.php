@@ -12,7 +12,7 @@ $transaction = new Transaction($conn);
 
 // AJAX request
 if (isset($_GET['ajax']) && $_GET['ajax'] === '1' && isset($_GET['month'])) {
-    $month = $_GET['month'];
+    $month = str_pad($_GET['month'], 2, '0', STR_PAD_LEFT); // gi two digits
     $year = date('Y');
 
     $totalSalesAmount = $transaction->getMonthlySales($month, $year)['total_sales'] ?? 0;
