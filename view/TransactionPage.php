@@ -38,7 +38,7 @@
                             </button>
                         </div>
 
-                        <div class="table-responsive bg-white rounded p-2">
+                        <div class="table-responsive bg-white rounded p-2" style="max-height: 400px; overflow-y: auto;">
                             <table id="posTable" class="table table-bordered text-center align-middle mb-0 small">
                                 <thead style="background-color: #e9ecef;">
                                     <tr>
