@@ -197,59 +197,79 @@
                 });
             });
 
-            // Add item on Confirm button click
-            $('#confirmAddItem').on('click', function (e) {
-                e.preventDefault();
-                var productId = $('#productSelect').val();
-                var productName = $('#productSelect option:selected').text();
-                var price = parseFloat($('#productSelect option:selected').data('price'));
-                var qty = parseInt($('#productQty').val());
 
-                if (!productId || qty < 1) {
-                    alert('Please select a valid product and quantity.');
-                    return;
-                }
+            $.ajax({
+                    url: "../controller/TransactionController.php",
+                    method: "GET",
+                    data: {
+                        action: "checkStock",
+                        product_id: productId
+                    },
+                    dataType: "json",
+                    success: function (response) {
+                        if (response.success) {
+                            var availableStock = parseInt(response.stock_quantity);
 
-                var subtotal = price * qty;
+                            if (qty > availableStock) {
+                                alert('Not enough stock. Available quantity: ' + availableStock);
+                                return;
+                            }
 
-                // Check if product already exists in POS table, update qty and subtotal if yes
-                var rowIndex = -1;
-                posTable.rows().every(function (rowIdx, tableLoop, rowLoop) {
-                    var data = this.data();
-                    if (data[0] === productId) {
-                        rowIndex = rowIdx;
+                            // Proceed to add item to POS table
+                            var subtotal = price * qty;
+
+                            var rowIndex = -1;
+                            posTable.rows().every(function (rowIdx) {
+                                var data = this.data();
+                                if (data[0] === productId) {
+                                    rowIndex = rowIdx;
+                                }
+                            });
+
+                            if (rowIndex > -1) {
+                                // Update existing row
+                                var rowData = posTable.row(rowIndex).data();
+                                var newQty = parseInt(rowData[2]) + qty;
+
+                                if (newQty > availableStock) {
+                                    alert('Total quantity exceeds available stock. Max: ' + availableStock);
+                                    return;
+                                }
+
+                                var newSubtotal = price * newQty;
+                                posTable.row(rowIndex).data([
+                                    productId,
+                                    productName,
+                                    newQty,
+                                    `₱${price.toFixed(2)}`,
+                                    `₱${newSubtotal.toFixed(2)}`,
+                                    `<button class="btn btn-danger btn-sm remove-item">X</button>`
+                                ]).draw(false);
+                            } else {
+                                // Add new row
+                                posTable.row.add([
+                                    productId,
+                                    productName,
+                                    qty,
+                                    `₱${price.toFixed(2)}`,
+                                    `₱${subtotal.toFixed(2)}`,
+                                    `<button class="btn btn-danger btn-sm remove-item">X</button>`
+                                ]).draw(false);
+                            }
+
+                            updateTotalAmount();
+                            $('#addItemModal').modal('hide');
+                        } else {
+                            alert("Failed to check stock: " + response.message);
+                        }
+                    },
+                    error: function () {
+                        alert("Error checking stock.");
                     }
                 });
-
-                if (rowIndex > -1) {
-                    // Update existing row
-                    var rowData = posTable.row(rowIndex).data();
-                    var newQty = parseInt(rowData[2]) + qty;
-                    var newSubtotal = price * newQty;
-
-                    posTable.row(rowIndex).data([
-                        productId,
-                        productName,
-                        newQty,
-                        `₱${price.toFixed(2)}`,
-                        `₱${newSubtotal.toFixed(2)}`,
-                        `<button class="btn btn-danger btn-sm remove-item">X</button>`
-                    ]).draw(false);
-                } else {
-                    // Add new row
-                    posTable.row.add([
-                        productId, //hidden column
-                        productName,
-                        qty,
-                        `₱${price.toFixed(2)}`,
-                        `₱${subtotal.toFixed(2)}`,
-                        `<button class="btn btn-danger btn-sm remove-item">X</button>`
-                    ]).draw(false);
-                }
-
-                updateTotalAmount();
-                $('#addItemModal').modal('hide');
             });
+
+            
 
             $('#posTable tbody').on('click', '.remove-item', function () {
                 posTable.row($(this).parents('tr')).remove().draw();
