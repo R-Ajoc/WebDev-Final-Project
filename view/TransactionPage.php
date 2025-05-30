@@ -197,6 +197,67 @@
                 });
             });
 
+            $('#posTable tbody').on('click', '.remove-item', function () {
+                posTable.row($(this).parents('tr')).remove().draw();
+                updateTotalAmount();
+            });
+
+            // Clear transaction
+            $('#clearTransaction').click(function () {
+                posTable.clear().draw();
+                updateTotalAmount();
+            });
+
+            // Update total amount field
+            function updateTotalAmount() {
+                var total = 0;
+                posTable.rows().every(function () {
+                    var data = this.data();
+                    var subtotal = parseFloat(data[4].replace('₱', '')) || 0;
+                    total += subtotal;
+                });
+                $('#totalAmount').val('₱' + total.toFixed(2));
+            }
+
+            // Record transaction button 
+            $('#recordTransaction').click(function () {
+                var transactionItems = [];
+
+                posTable.rows().every(function () {
+                    var data = this.data();
+                    transactionItems.push({
+                        product_id: data[0], //hidden id
+                        quantity: parseInt(data[2]), //quantity kay naa na sa index 2 to accomodate hidden id
+                        price: parseFloat(data[3].replace('₱', '')),
+                        subtotal: parseFloat(data[4].replace('₱', ''))
+                    });
+                });
+
+                if (transactionItems.length === 0) {
+                    alert('No items to record.');
+                    return;
+                }
+
+                $.ajax({
+                    url: "../controller/TransactionController.php?action=create",
+                    method: "POST",
+                    data: { items: JSON.stringify(transactionItems) },
+                    dataType: "json",
+                    success: function (response) {
+                        if (response.success) {
+                            alert("Transaction recorded! ID: " + response.transaction_id);
+                            posTable.clear().draw();
+                            updateTotalAmount();
+                            loadSalesLog();
+                        } else {
+                            alert("Failed to record transaction: " + response.message);
+                        }
+                    },
+                    error: function () {
+                        alert("Error recording transaction.");
+                    }
+                });
+            });
 
             $.ajax({
                     url: "../controller/TransactionController.php",
@@ -265,70 +326,6 @@
                     },
                     error: function () {
                         alert("Error checking stock.");
-                    }
-                });
-            });
-
-            
-
-            $('#posTable tbody').on('click', '.remove-item', function () {
-                posTable.row($(this).parents('tr')).remove().draw();
-                updateTotalAmount();
-            });
-
-            // Clear transaction
-            $('#clearTransaction').click(function () {
-                posTable.clear().draw();
-                updateTotalAmount();
-            });
-
-            // Update total amount field
-            function updateTotalAmount() {
-                var total = 0;
-                posTable.rows().every(function () {
-                    var data = this.data();
-                    var subtotal = parseFloat(data[4].replace('₱', '')) || 0;
-                    total += subtotal;
-                });
-                $('#totalAmount').val('₱' + total.toFixed(2));
-            }
-
-            // Record transaction button 
-            $('#recordTransaction').click(function () {
-                var transactionItems = [];
-
-                posTable.rows().every(function () {
-                    var data = this.data();
-                    transactionItems.push({
-                        product_id: data[0], //hidden id
-                        quantity: parseInt(data[2]), //quantity kay naa na sa index 2 to accomodate hidden id
-                        price: parseFloat(data[3].replace('₱', '')),
-                        subtotal: parseFloat(data[4].replace('₱', ''))
-                    });
-                });
-
-                if (transactionItems.length === 0) {
-                    alert('No items to record.');
-                    return;
-                }
-
-                $.ajax({
-                    url: "../controller/TransactionController.php?action=create",
-                    method: "POST",
-                    data: { items: JSON.stringify(transactionItems) },
-                    dataType: "json",
-                    success: function (response) {
-                        if (response.success) {
-                            alert("Transaction recorded! ID: " + response.transaction_id);
-                            posTable.clear().draw();
-                            updateTotalAmount();
-                            loadSalesLog();
-                        } else {
-                            alert("Failed to record transaction: " + response.message);
-                        }
-                    },
-                    error: function () {
-                        alert("Error recording transaction.");
                     }
                 });
             });
