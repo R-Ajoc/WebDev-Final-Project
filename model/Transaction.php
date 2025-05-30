@@ -99,6 +99,14 @@ class Transaction {
     $stmt->closeCursor();
     return $salesLog;
 }
+    public function checkStock($product_id) {
+        $stmt = $this->conn->prepare("SELECT quantity FROM products WHERE product_id = :prod_id");
+        $stmt->bindParam(':prod_id', $product_id, PDO::PARAM_INT);
+        $stmt->execute();
+        $stock = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return $stock ? (int)$stock['quantity'] : null;
+    }
 
 }
 ?>
