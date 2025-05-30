@@ -77,6 +77,22 @@ if (isset($_GET['action'])) {
             echo json_encode($result);
             break;
 
+        //new Checks Stock of the Selected Product during Transaction Item Add 
+        case 'checkStock':
+            if (isset($_GET['product_id'])) {
+                $product_id = intval($_GET['product_id']); // Ensure it's an integer
+                $stockResult = $transaction->checkStock($product_id);
+
+                    if ($stockResult !== null) {
+                        echo json_encode(['success' => true, 'stock_quantity' => $stockResult]);
+                    } else {
+                        echo json_encode(['success' => false, 'message' => 'Stock unavailable.']);
+                    }
+            } else {
+                echo json_encode(['success' => false, 'message' => 'Missing product ID']);
+            }
+            break;
+
         default:
             echo json_encode(['error' => 'Unknown action']);
     }
