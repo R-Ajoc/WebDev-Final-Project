@@ -75,7 +75,7 @@
                         <h4 class="mb-0">Sales Log</h4>
                         <button class="btn btn-primary btn-sm" id="printSalesLog">Print</button>
                     </div>
-                    <div class="table-responsive bg-white rounded p-2">
+                    <div class="table-responsive bg-white rounded p-2" style="max-height: 400px; overflow-y: auto;">
                         <table id="salesLogTable" class="table table-bordered text-center align-middle mb-0">
                             <thead>
                                 <tr>
