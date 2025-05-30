@@ -9,6 +9,10 @@
     <link href="../assets/DataTables/datatables.min.css" rel="stylesheet">
     <link href="../assets/Transaction.css" rel="stylesheet">
     <link href="../assets/inventory.css" rel="stylesheet">
+
+    //Used for generating a downloadable Sales Report PDF format 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
 </head>
 <body>
     <?php include 'sidebar.php'; ?>
@@ -135,6 +139,26 @@
     <script src="../assets/DataTables/datatables.min.js"></script>
 
     <script>
+        //Button "Print" generates downloadable pdf format of the Sales Log
+        document.getElementById('printSalesLog').addEventListener('click', function () {
+            const { jsPDF } = window.jspdf;
+            var doc = new jsPDF();
+
+            doc.setFontSize(18);
+            doc.text("Sales Log Report", 14, 22);
+
+            doc.autoTable({
+                startY: 30,
+                html: '#salesLogTable',
+                styles: { fontSize: 8 },
+                headStyles: { fillColor: [0, 64, 173] },
+                alternateRowStyles: { fillColor: [240, 240, 240] },
+                margin: { left: 14, right: 14 },
+            });
+
+            doc.save('SalesLog.pdf');
+        });
+        
         function updateTime() {
             const now = new Date();
             const date = now.toLocaleDateString();
