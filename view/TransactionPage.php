@@ -10,7 +10,7 @@
     <link href="../assets/Transaction.css" rel="stylesheet">
     <link href="../assets/inventory.css" rel="stylesheet">
 
-    //Used for generating a downloadable Sales Report PDF format 
+    //Used for generating a downloadable Sales Report PDF format, needed for online
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
 </head>
